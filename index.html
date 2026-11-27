@@ -53,6 +53,12 @@ p{margin:0}
 /* fondo: degradado sobrio según la condición del día (no es contenido: el texto vive sobre él o en tarjetas sólidas) */
 .atmo{position:fixed;inset:0;z-index:-1;background:var(--sky-dry);pointer-events:none}
 .atmo[data-c="lluvia"]{background:var(--sky-rain)}
+/* grano de película muy fino sobre el cielo: quita el degradado plano de pantalla. Inline, sin pedir nada a otro servidor */
+.atmo::after{content:"";position:absolute;inset:0;opacity:.07;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* la respuesta del día entra enfocándose cuando cambia (no al hacer scroll dentro del mismo día) */
+@keyframes enfoca{from{opacity:.35;filter:blur(3px)}to{opacity:1;filter:none}}.hread.in{animation:enfoca 280ms var(--spring) both}
+@media (prefers-reduced-motion:reduce){.hread.in{animation:none}}
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more){.atmo::after{display:none}}
 .atmo[data-c="aviso"]{background:linear-gradient(180deg,color-mix(in srgb,var(--warn) 6%,transparent),transparent 220px),var(--sky-rain)}
 /* scroll edge effect: un velo suave arriba, solo con scroll; no es una barra */
 .edge{position:fixed;inset:0 0 auto;height:calc(env(safe-area-inset-top,0px) + 20px);z-index:5;pointer-events:none;background:linear-gradient(var(--bg),transparent);opacity:0;transition:opacity var(--d-fast)}
@@ -77,6 +83,7 @@ html.scrolled .edge{opacity:1}
 .status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--pc,var(--head2));flex:none}
 .status.k0{--pc:var(--ok)}.status.k1,.status.k2{--pc:var(--r2)}.status.k3{--pc:var(--warn)}.status.k4,.status.k5{--pc:var(--crit)}.status.past{--pc:var(--head2)}
 .subt{font:var(--t-foot);color:var(--head2);margin:0}
+#stale{color:var(--label2)}#stale a{color:var(--tint)}
 .stale{align-self:flex-start;display:flex;align-items:center;gap:6px;margin-top:calc(-1 * var(--s2));font:var(--t-callout);font-weight:600;color:var(--warn)}
 .stale svg{width:16px;height:16px;flex:none}
 .stale a{font-weight:600}
@@ -147,7 +154,7 @@ body.old .hourly{opacity:.6}
 .dcell svg{position:absolute;left:0;right:0;bottom:12px;width:100%;height:28px;pointer-events:none}
 .dcell .q{position:relative;display:flex;gap:2px;width:100%;padding:0 4px;margin-top:auto}.dcell .q i{flex:1;height:4px;border-radius:2px;background:var(--label3);opacity:.35}
 .dcell .q i.l{background:var(--r1);opacity:.6}.dcell .q i.b{background:var(--r2);opacity:1}.dcell .q i.w{background:var(--warn);opacity:1}.dcell .q i.c{background:var(--crit);opacity:1}.dcell .q i.o{background:none;border:1.2px solid var(--warn);opacity:1;height:4px;box-sizing:border-box}
-.dsel{position:absolute;top:2px;bottom:2px;border:1.5px solid var(--label);border-radius:10px;pointer-events:none}
+.dsel{position:absolute;top:2px;bottom:2px;border:1.5px solid var(--tint);border-radius:10px;pointer-events:none;background:color-mix(in srgb,var(--tint) 10%,transparent)}
 @media (min-width:1024px){.wrap,.dock{max-width:780px!important}}
 .dnav .hoyb{width:auto;padding:0 10px;font:600 .882rem/1 var(--f);color:var(--tint)}.dnav .hoyb[hidden]{display:none}
 .dnav{margin-left:auto;display:flex;flex:none;margin-right:-10px}
@@ -177,6 +184,8 @@ body.old .hourly{opacity:.6}
 /* gráfico por hora: SVG de ancho completo; todo el gráfico es zona de toque para barrer */
 .hourly{margin:0;padding:var(--s3) var(--s3) 0}
 .hread.lead{font-weight:600}
+/* la respuesta del día manda: más grande que el texto del gráfico */
+@media (min-width:360px){.hread{font:600 1.059rem/1.3 var(--f)!important;letter-spacing:-.01em}}
 @media (max-width:359px){.hread{-webkit-line-clamp:3!important;max-height:4em!important;min-height:4em!important}
   /* teléfonos de 320 px: el aviso de datos viejos en una línea, para que el eje del gráfico quede arriba del dock */
   .stale{font:var(--t-foot);font-weight:600}.stale svg{width:14px;height:14px}
@@ -192,7 +201,7 @@ body.old .hourly{opacity:.6}
 .zseg button.dot,.dnav button.dot{position:relative}.zseg button.dot::after,.dnav button.dot::after{content:"";position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--warn)}
 .dotleg{margin:2px 16px 0;font:var(--t-foot);color:var(--label2);display:flex;align-items:center;gap:6px}.dotleg[hidden]{display:none}.dotleg i{width:8px;height:8px;border-radius:50%;background:var(--warn);flex:none}
 .cleg .adv{height:3px;background:var(--adv)}
-.hguide{position:absolute;left:0;top:0;bottom:0;width:70px;pointer-events:none}.hguide span{position:absolute;left:4px;font-size:10px;color:var(--label3);text-shadow:0 0 3px var(--card),0 0 3px var(--card)}
+.hguide{position:absolute;left:0;top:0;bottom:0;width:70px;pointer-events:none}.hguide span{position:absolute;left:4px;font-size:10px;font-weight:600;color:var(--label2);text-shadow:0 0 3px var(--card),0 0 3px var(--card)}
 .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .zseg{margin-left:0;display:flex;background:var(--fill);border-radius:10px;padding:2px;gap:2px;flex:none}.zseg button{min-width:48px;min-height:44px;padding:0 8px;border:0;border-radius:8px;background:none;font:600 .765rem/1 var(--f);color:var(--label2);cursor:pointer}.zseg button[aria-pressed="true"]{background:var(--card);color:var(--label);box-shadow:0 1px 3px rgba(0,0,0,.12)}
 .hplot:focus-visible{outline-offset:4px}
@@ -1265,6 +1274,7 @@ document.querySelectorAll('.tip').forEach(t=>t.addEventListener('toggle',e=>{con
 addEventListener('scroll',()=>{document.querySelectorAll('.tip').forEach(t=>{try{if(t.matches(':popover-open'))t.hidePopover();}catch(e){}});},{passive:true,capture:true});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&tipBtn)setTimeout(()=>{if(document.activeElement===document.body)tipBtn.focus();},0);});
 render();
+{const h=document.getElementById('hread');let prev=h.textContent;new MutationObserver(()=>{if(h.textContent===prev)return;prev=h.textContent;h.classList.remove('in');void h.offsetWidth;h.classList.add('in');}).observe(h,{childList:true,characterData:true,subtree:true});}
 // botón Actualizar: solo en la página propia (live.js)
 window.__vivo.boton(D,$('refr'),$('refrs'),$('stale'));
 })();
